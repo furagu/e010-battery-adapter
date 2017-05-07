@@ -94,6 +94,7 @@ module main() {
 
                 translate([battery_grip_l, (cage_w - battery_w - thickness) / 2 - 1, cage_h - battery_h])
                     cube(size=[cage_l + cage_flange * 2 - battery_grip_l * 2, battery_w + thickness * 2 + 2, cage_h]);
+
             }
 
             for(y = [thickness, box_w - thickness - cage_grip]) {
@@ -114,18 +115,69 @@ module main() {
             }
         }
 
-        cut_positions = [
-            [-gate_r - 1, -1, cage_base],
-            [-gate_r - 1, box_w - gate_r * 2 - 1, cage_base],
+        translate([0, (box_w - battery_w) / 2, -1])
+            triangle_mesh(l=box_l, w=battery_w, h=cage_h, thickness=thickness, segments=8);
 
-            [box_l - (box_l - cage_top) / 2, -1, cage_base],
-            [box_l - (box_l - cage_top) / 2, box_w - gate_r * 2 - 1, cage_base],
-
-        ];
-
-        for(pos = cut_positions) {
-            translate(pos)
-                cube(size=[(box_l - cage_top) / 2 + gate_r + 1, gate_r * 2 + 2, cage_h - cage_base + 1]);
+        for(y = [gate_r, box_w]) {
+            translate([cage_flange, y, cage_h - battery_h])
+            rotate([90, 0, 0])
+                circle_mesh(l=cage_l, w=battery_h, h=gate_r, thickness=thickness, segments=9);
         }
     }
 }
+
+module triangle_mesh(l, w, h, thickness, segments) {
+    segment_l = (l - thickness * 2) / segments;
+    angle = atan((w - thickness * 2) / segment_l);
+
+    segment_base = sqrt(pow(w, 2) + pow(segment_l, 2));
+
+    linear_extrude(height=h)
+    difference() {
+        square([l, w]);
+
+        intersection() {
+            union() {
+                for(x = [thickness : segment_l * 2 : l]) {
+                    translate([x, thickness])
+                    rotate([0, 0, angle])
+                    translate([segment_base / 2, 0])
+                        square([segment_base, thickness], center=true);
+                }
+
+                for(x = [thickness + segment_l * 2 : segment_l * 2 : l]) {
+                    translate([x, thickness])
+                    rotate([0, 0, 180 - angle])
+                    translate([segment_base / 2, 0])
+                        square([segment_base, thickness], center=true);
+                }
+            }
+            square([l, w]);
+        }
+
+        difference() {
+            square([l, w]);
+            translate([thickness, thickness])
+                square([l - thickness * 2, w - thickness * 2]);
+        }
+    }
+}
+
+module circle_mesh(l, w, h, thickness, segments) {
+    segment_l = (l - thickness * 2) / segments;
+    segment_w = (w - thickness * 2) / segments;
+    r = (l - thickness * (segments + 1)) / segments / 2;
+
+    linear_extrude(height=h) {
+        for(x = [thickness + r : r * 2 + thickness : l]) {
+            hull() {
+                translate([x, thickness + r])
+                    circle(r=r);
+
+                translate([x, w - thickness - r])
+                    circle(r=r);
+            }
+        }
+    }
+}
+
