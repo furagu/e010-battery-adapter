@@ -2,10 +2,10 @@ $fn = 100;
 
 main(
     battery_l       = 32.5,
-    battery_w       = 11.2,
+    battery_w       = 11.1,
     battery_h       = 5.9,
     battery_stop_h  = 2,
-    battery_stop_r  = 0.7,
+    battery_stop_r  = 1.1,
     battery_grip_l  = 3,
     battery_cage_l  = 6,
 
@@ -17,7 +17,7 @@ main(
     grip_l          = 1.2,
     grip_h          = 4.5,
 
-    thickness       = 0.6
+    thickness       = 0.5
 );
 
 module main() {
@@ -87,19 +87,6 @@ module main() {
 
             }
 
-            helper_positions = [
-                [battery_grip_l,  gate_r * 2 - thickness],
-                [cage_l - battery_grip_l, gate_r * 2 - thickness],
-                [battery_grip_l,  cage_w - gate_r * 2 + thickness],
-                [cage_l - battery_grip_l, cage_w - gate_r * 2 + thickness],
-            ];
-
-            for(pos = helper_positions) {
-                translate(pos)
-                    cylinder(h=cage_h, r=thickness);
-            }
-
-
             grip_t = grip_w + thickness;
 
             grip_positions = [
@@ -115,44 +102,12 @@ module main() {
             }
         }
 
-        translate([0, gate_r * 2 - thickness, -1])
-            triangle_mesh(l=cage_l, w=battery_w + thickness * 2, h=cage_h, thickness=thickness, segments=8);
-    }
-}
+        translate([thickness, gate_r * 2, -1])
+            cube(size=[cage_l - thickness * 2, cage_w - gate_r * 4, cage_h]);
 
-module triangle_mesh(l, w, h, thickness, segments) {
-    segment_l = (l - thickness * 2) / segments;
-    angle = atan((w - thickness * 2) / segment_l);
-
-    segment_base = sqrt(pow(w, 2) + pow(segment_l, 2));
-
-    linear_extrude(height=h)
-    difference() {
-        square([l, w]);
-
-        intersection() {
-            union() {
-                for(x = [thickness : segment_l * 2 : l]) {
-                    translate([x, thickness])
-                    rotate([0, 0, angle])
-                    translate([segment_base / 2, 0])
-                        square([segment_base, thickness], center=true);
-                }
-
-                for(x = [thickness + segment_l * 2 : segment_l * 2 : l]) {
-                    translate([x, thickness])
-                    rotate([0, 0, 180 - angle])
-                    translate([segment_base / 2, 0])
-                        square([segment_base, thickness], center=true);
-                }
-            }
-            square([l, w]);
-        }
-
-        difference() {
-            square([l, w]);
-            translate([thickness, thickness])
-                square([l - thickness * 2, w - thickness * 2]);
+        for(x = [-gate_r - 1, cage_l - battery_grip_l]) {
+            translate([x, -1, cage_h - battery_h + (battery_h - battery_stop_h) / 2 + battery_stop_h])
+                cube(size=[battery_grip_l + gate_r + 1, cage_w + 2, cage_h]);
         }
     }
 }
