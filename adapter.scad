@@ -2,7 +2,7 @@ $fn = 100;
 
 main(
     battery_l       = 32.5,
-    battery_w       = 11.1,
+    battery_w       = 10.7,
     battery_h       = 5.9,
     battery_stop_h  = 2,
     battery_stop_r  = 1.1,
