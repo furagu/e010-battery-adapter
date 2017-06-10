@@ -1,8 +1,8 @@
 $fn = 100;
 
 main(
-    battery_w = 11,
-    battery_h = 5.9,
+    battery_w = 10.7,
+    battery_h = 6.2,
 
     cage_l    = 27,
     cage_w    = 17.7,
@@ -11,7 +11,7 @@ main(
     stand_l   = 3,
     stop_l    = 5,
 
-    hook_l    = 3,
+    hook_l    = 2,
     hook_h    = 5,
     wall_w    = 0.6,
 
@@ -41,10 +41,10 @@ module main() {
         );
     }
 
-    translate([cage_l, gate_r * 2 - thickness, cage_h - battery_h + battery_h * 0.2 ])
+    translate([cage_l, gate_r * 2 - thickness, cage_h - battery_h + battery_h * 0.3 ])
     stopper(
         w = battery_w + thickness * 2,
-        h = battery_h * 0.4,
+        h = battery_h * 0.3,
         l = stop_l + thickness,
         t = thickness
     );
@@ -60,9 +60,9 @@ module main() {
         );
     }
 
-    for (y = [-wall_w, cage_w - wall_w]) {
+    for (y = [-thickness, cage_w - thickness]) {
         translate([cage_l, y, 0])
-        cube([thickness * 2, wall_w * 2, hook_h]);
+        cube([thickness * 2, thickness * 2, hook_h]);
     }
 }
 
