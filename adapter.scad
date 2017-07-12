@@ -136,6 +136,19 @@ module stopper() {
             square([r + t + 1, w + 2]);
         }
     }
+
+    reinforcer_l = (l - r) * 0.8;
+
+    for(y = [0, w - t]) {
+        translate([0, y, -reinforcer_l])
+        difference() {
+            cube(size=[reinforcer_l, t, reinforcer_l]);
+
+            translate([reinforcer_l, 0, reinforcer_l])
+            rotate([0, 135, 0])
+            cube(size=[reinforcer_l * 2, t, reinforcer_l]);
+        }
+    }
 }
 
 module hook() {
